@@ -3,42 +3,42 @@
 # by Steven Hazel
 
 from monocle.twisted_stack.eventloop import reactor
-from twisted.internet.protocol import Factory, Protocol, ClientFactory, ServerFactory
+from twisted.internet.protocol import Factory, Protocol, ClientFactory
 from twisted.internet import ssl
 from twisted.internet.error import TimeoutError
 
-from monocle import _o, Return, launch
+from monocle import _o, launch
 from monocle.callback import Callback
-from monocle.stack.network import Connection, ConnectionLost
+from monocle.stack.network import Connection
 from monocle.util import monkeypatch
-from twisted.protocols.tls import TLSMemoryBIOProtocol, WantReadError
+import twisted
+from twisted.protocols.tls import TLSMemoryBIOProtocol
 
+twisted_major_version = int(twisted.__version__.split('.')[0])
+if twisted_major_version < 11:
+    # monkeypatch TLSMemoryBIOProtocol to resume reading when necessary for writes
+    @monkeypatch(TLSMemoryBIOProtocol)
+    def __init__(orig_method, self, *a, **k):
+        orig_method(self, *a, **k)
+        self._was_paused = False
 
-# monkeypatch TLSMemoryBIOProtocol to resume reading when necessary for writes
-@monkeypatch(TLSMemoryBIOProtocol)
-def __init__(orig_method, self, *a, **k):
-    orig_method(self, *a, **k)
-    self._was_paused = False
+    @monkeypatch(TLSMemoryBIOProtocol)
+    def _write(orig_method, self, bytes):
+        was_blocked = self._writeBlockedOnRead
+        orig_method(self, bytes)
+        if self._writeBlockedOnRead and not was_blocked:
+            if self.transport.producer._producerPaused:
+                self._was_paused = True
+                self.transport.resumeProducing()
 
-
-@monkeypatch(TLSMemoryBIOProtocol)
-def _write(orig_method, self, bytes):
-    was_blocked = self._writeBlockedOnRead
-    orig_method(self, bytes)
-    if self._writeBlockedOnRead and not was_blocked:
-        if self.transport.producer._producerPaused:
-            self._was_paused = True
-            self.transport.resumeProducing()
-
-
-@monkeypatch(TLSMemoryBIOProtocol)
-def dataReceived(orig_method, self, bytes):
-    was_blocked = self._writeBlockedOnRead
-    orig_method(self, bytes)
-    if not self._writeBlockedOnRead and was_blocked:
-        if self._was_paused:
-            self.transport.pauseProducing()
-            self._was_paused = False
+    @monkeypatch(TLSMemoryBIOProtocol)
+    def dataReceived(orig_method, self, bytes):
+        was_blocked = self._writeBlockedOnRead
+        orig_method(self, bytes)
+        if not self._writeBlockedOnRead and was_blocked:
+            if self._was_paused:
+                self.transport.pauseProducing()
+                self._was_paused = False
 
 
 class _Connection(Protocol):

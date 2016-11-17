@@ -1,30 +1,22 @@
 language: python
 sudo: false
 branches:
-  except:
-    - gh-pages
+  only:
+  - master
 
 matrix:
   include:
-    - python: 2.7
-      env: TOXENV=py27-asyncore MONOCLE_STACK=asyncore PYTHON_VERSION=27
-    - python: 2.7
-      env: TOXENV=py27-tornado MONOCLE_STACK=tornado PYTHON_VERSION=27
-    - python: 2.7
-      env: TOXENV=py27-twisted MONOCLE_STACK=twisted PYTHON_VERSION=27
-    - python: 2.6
-      env: TOXENV=py26-asyncore MONOCLE_STACK=asyncore PYTHON_VERSION=26
-    - python: 2.6
-      env: TOXENV=py26-tornado MONOCLE_STACK=tornado PYTHON_VERSION=26
-    - python: 2.6
-      env: TOXENV=py26-twisted26 MONOCLE_STACK=twisted PYTHON_VERSION=26
-    - python: pypy
-      env: TOXENV=pypy-tornado MONOCLE_STACK=tornado PYTHON_VERSION=26
+    - env: id=latest TOXENV=py27-twisted-latest
+    - env: id=p27-recent TOXENV=py27-twisted-16,py27-twisted-15,py27-twisted-14
+    - env: id=p27-older TOXENV=py27-twisted-13,py27-twisted-12,py27-twisted-11,py27-twisted-10
+    - env: id=p26 TOXENV=py26-twisted-13,py26-twisted-12,py26-twisted-11,py26-twisted-10
+    - env: id=tornado TOXENV=py27-tornado,pypy-tornado
+      python: "pypy-5.3.1"
+    # todo: fix asyncore, or deprecate
+    #- env: id=py27-asyncore TOXENV=py27-asyncore
+    #- env: id=py26-asyncore TOXENV=py26-asyncore
   allow_failures:
-    - python: 2.7
-      env: TOXENV=py27-asyncore MONOCLE_STACK=asyncore PYTHON_VERSION=27
-    - python: 2.6
-      env: TOXENV=py26-asyncore MONOCLE_STACK=asyncore PYTHON_VERSION=26
+    - env: id=latest TOXENV=py27-twisted-latest
 
 cache:
   - apt
@@ -39,8 +31,3 @@ install:
 
 script:
   - tox
-
-after_success:
-  - source .tox/py${PYTHON_VERSION}-${MONOCLE_STACK}/bin/activate && py.test -q --confcutdir=.. -n 1 --junitxml=tests/junit.xml --cov-report xml --cov monocle --cov-report=html --cov-report term-missing --pep8
-  - source .tox/py27-${MONOCLE_STACK}/bin/activate && pylint monocle
-

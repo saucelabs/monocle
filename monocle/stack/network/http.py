@@ -10,7 +10,13 @@ import Cookie
 from functools import wraps
 
 from monocle import _o, Return
-from monocle.stack.network import ConnectionLost, Client, SSLClient
+
+from monocle.stack.network import ConnectionLost, Client
+
+try:
+    from monocle.stack.network import SSLClient
+except:
+    pass
 
 log = logging.getLogger(__name__)
 
@@ -272,7 +278,7 @@ class HttpClient(object):
 
         if scheme == 'http':
             self.client = Client()
-        elif scheme == 'https':
+        elif SSLClient and scheme == 'https':
             self.client = SSLClient()
         else:
             raise HttpException('unsupported url scheme %s' % scheme)

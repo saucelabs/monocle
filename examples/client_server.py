@@ -1,11 +1,11 @@
 import sys
 import time
 import monocle
-
-from monocle import _o
 monocle.init(sys.argv[1])
 
-from monocle.stack import eventloop
+from monocle.script_util import run
+
+from monocle import _o
 from monocle.stack.network import add_service, Service, Client, ConnectionLost
 
 
@@ -33,9 +33,7 @@ def do_echos():
         print '10000 loops in %.2fs' % (time.time() - t)
     finally:
         client.close()
-        eventloop.halt()
 
 
 add_service(Service(handle_echo, port=8000))
-monocle.launch(do_echos)
-eventloop.run()
+run(do_echos)

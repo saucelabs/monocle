@@ -15,30 +15,41 @@ import twisted
 from twisted.protocols.tls import TLSMemoryBIOProtocol
 
 twisted_major_version = int(twisted.__version__.split('.')[0])
-if twisted_major_version < 11:
-    # monkeypatch TLSMemoryBIOProtocol to resume reading when necessary for writes
-    @monkeypatch(TLSMemoryBIOProtocol)
-    def __init__(orig_method, self, *a, **k):
-        orig_method(self, *a, **k)
-        self._was_paused = False
 
-    @monkeypatch(TLSMemoryBIOProtocol)
-    def _write(orig_method, self, bytes):
-        was_blocked = self._writeBlockedOnRead
-        orig_method(self, bytes)
-        if self._writeBlockedOnRead and not was_blocked:
-            if self.transport.producer._producerPaused:
-                self._was_paused = True
-                self.transport.resumeProducing()
 
-    @monkeypatch(TLSMemoryBIOProtocol)
-    def dataReceived(orig_method, self, bytes):
-        was_blocked = self._writeBlockedOnRead
-        orig_method(self, bytes)
-        if not self._writeBlockedOnRead and was_blocked:
-            if self._was_paused:
-                self.transport.pauseProducing()
-                self._was_paused = False
+# monkeypatch TLSMemoryBIOProtocol to resume reading when necessary for writes
+@monkeypatch(TLSMemoryBIOProtocol)
+def __init__(orig_method, self, *a, **k):
+    orig_method(self, *a, **k)
+    self._was_paused = False
+
+
+def _is_blocked(o):
+    if twisted_major_version > 16 or not hasattr(o, '_writeBlockedOnRead'):
+        return len(o._appSendBuffer) > 0
+    else:
+        return o._writeBlockedOnRead
+
+
+@monkeypatch(TLSMemoryBIOProtocol)
+def _write(orig_method, self, bytes):
+    was_blocked = _is_blocked(self)
+    orig_method(self, bytes)
+    if not was_blocked and _is_blocked(self):
+        if (self.transport.producer is not None and
+            self.transport.producer._producerPaused):
+            self._was_paused = True
+            self.transport.resumeProducing()
+
+
+@monkeypatch(TLSMemoryBIOProtocol)
+def dataReceived(orig_method, self, bytes):
+    was_blocked = _is_blocked(self)
+    orig_method(self, bytes)
+    if was_blocked and not _is_blocked(self):
+        if self._was_paused:
+            self.transport.pauseProducing()
+            self._was_paused = False
 
 
 class _Connection(Protocol):

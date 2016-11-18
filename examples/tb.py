@@ -1,18 +1,19 @@
 import sys
-
 import monocle
 monocle.init(sys.argv[1])
 
+from monocle.script_util import run
+
 from monocle import _o, launch
 from monocle.util import sleep
-from monocle.stack import eventloop
 from monocle.stack.network.http import HttpClient
+
+import traceback
 
 
 @_o
 def req():
-    client = HttpClient()
-    yield client.connect("localhost", 12344, timeout=1)
+    yield sleep(1)
 
 
 def die():
@@ -44,14 +45,9 @@ def first():
 
 @_o
 def first_evlp():
-    try:
-        yield sleep(1)
-        yield req()
-        yield launch(second)
-    finally:
-        eventloop.halt()
+    yield sleep(1)
+    yield req()
+    yield launch(second)  # won't crash
 
 
-launch(first)
-eventloop.queue_task(0, first_evlp)
-eventloop.run()
+run(first_evlp)

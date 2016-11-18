@@ -1,26 +1,31 @@
+import sys
 import monocle
+monocle.init(sys.argv[1])
 
+from monocle.script_util import run
+
+from monocle import _o
 from monocle import Return, InvalidYieldException
 
 
-@monocle.o
+@_o
 def square(x):
     yield Return(x * x)
     print "not reached"
 
 
-@monocle.o
+@_o
 def fail():
     raise Exception("boo")
     print (yield square(2))
 
 
-@monocle.o
+@_o
 def invalid_yield():
     yield "this should fail"
 
 
-@monocle.o
+@_o
 def main():
     value = yield square(5)
     print value
@@ -41,6 +46,11 @@ def func_fail():
     raise Exception("boo")
 
 
-monocle.launch(fail)
-monocle.launch(func_fail)
-monocle.launch(main)
+@_o
+def example():
+
+    monocle.launch(fail)
+    monocle.launch(func_fail)
+    yield main()
+
+run(example)

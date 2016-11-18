@@ -1,11 +1,10 @@
 import sys
-
 import monocle
-
-from monocle import _o
 monocle.init(sys.argv[1])
 
-from monocle.stack import eventloop
+from monocle.script_util import run
+
+from monocle import _o
 from monocle.util import sleep
 
 
@@ -21,9 +20,12 @@ def print_every_two_seconds():
     for i in xrange(5):
         print "2"
         yield sleep(2)
-    eventloop.halt()
 
 
-monocle.launch(print_every_second)
-monocle.launch(print_every_two_seconds)
-eventloop.run()
+@_o
+def example():
+    monocle.launch(print_every_second)
+    monocle.launch(print_every_two_seconds)
+
+
+run(example)

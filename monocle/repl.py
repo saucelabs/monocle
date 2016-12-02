@@ -4,14 +4,13 @@ import readline
 import atexit
 import os
 import traceback
+import inspect
 from threading import Thread
 
 import monocle
-
-from monocle import _o, Return
-monocle.init(sys.argv[1])
-
+from monocle import Return, _o
 from monocle.stack import eventloop
+
 from monocle.callback import Callback
 
 
@@ -39,15 +38,26 @@ class HistoryConsole(code.InteractiveConsole):
 
 
 @_o
-def main():
+def repl(debug=True):
     print "Monocle", monocle.VERSION, "/", "Python", sys.version
     print 'Type "help", "copyright", "credits" or "license" for more information.'
     print "You can yield to Monocle oroutines at the prompt."
+    if debug:
+        print "Use cont() to continue."
     ic = HistoryConsole()
     gs = dict(globals())
-    ls = {}
+
+    done = {'val': False}
+    def cont():
+        done['val'] = True
+
+    if debug:
+        frame = inspect.currentframe()
+        ls = frame.f_back.f_back.f_back.f_back.f_locals
+        ls['cont'] = cont
+
     source = ""
-    while True:
+    while not done['val']:
         try:
             if source:
                 source += "\n"
@@ -118,5 +128,6 @@ def main():
 
 
 if __name__ == '__main__':
-    monocle.launch(main)
+    monocle.init(sys.argv[1])
+    monocle.launch(repl, debug=False)
     eventloop.run()

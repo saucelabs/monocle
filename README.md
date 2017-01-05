@@ -148,5 +148,3 @@ monocle is similar to, and takes inspiration from:
  * Go's goroutines (and CSP generally)
  * Haskell's I/O monad
  * eventlet
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/saucelabs/monocle/trend.png)](https://bitdeli.com/free "Bitdeli Badge")

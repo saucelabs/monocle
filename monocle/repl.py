@@ -48,6 +48,7 @@ def repl(debug=True):
     gs = dict(globals())
 
     done = {'val': False}
+
     def cont():
         done['val'] = True
 

@@ -2,7 +2,7 @@ import sys
 import core
 from core import _o, o, launch, Return, InvalidYieldException, log_exception
 
-VERSION = '0.37'
+VERSION = '0.38'
 
 _stack_name = None
 

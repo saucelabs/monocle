@@ -439,11 +439,9 @@ class HttpRouter(object):
         try:
             if handler:
                 resp = yield self.request_handler_wrapper(req, handler, **kwargs)
-
-            if self.handler and not resp:
+            elif self.handler:
                 resp = yield self.request_handler_wrapper(req, self.handler)
-
-            if not resp:
+            else:
                 resp = (404, {}, "")
         except Exception:
             log_exception()

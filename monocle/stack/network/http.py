@@ -7,10 +7,7 @@ import logging
 import base64
 import Cookie
 
-from functools import wraps
-
-from monocle import _o, Return
-
+from monocle import _o, Return, log_exception
 from monocle.stack.network import ConnectionLost, Client
 
 try:
@@ -439,14 +436,18 @@ class HttpRouter(object):
         resp = None
 
         handler, kwargs = self.route_match(req)
-        if handler:
-            resp = yield self.request_handler_wrapper(req, handler, **kwargs)
+        try:
+            if handler:
+                resp = yield self.request_handler_wrapper(req, handler, **kwargs)
 
-        if self.handler and not resp:
-            resp = yield self.request_handler_wrapper(req, self.handler)
+            if self.handler and not resp:
+                resp = yield self.request_handler_wrapper(req, self.handler)
 
-        if not resp:
-            resp = (404, {}, "")
+            if not resp:
+                resp = (404, {}, "")
+        except Exception:
+            log_exception()
+            resp = (500, {}, "500 Internal Server Error")
         after = time.time()
 
         content_length = 0

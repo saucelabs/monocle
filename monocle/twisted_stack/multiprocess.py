@@ -1,9 +1,6 @@
-from multiprocessing import Process, Pipe
+from multiprocessing import Pipe
 
-from monocle.twisted_stack.network import add_service, Client, ConnectionLost, _Connection, Factory, reactor
-from twisted.internet import ssl
-
-from monocle.stack.multiprocess import launch_proc
+from monocle.stack.multiprocessimport launch_proc
 
 log = logging.getLogger(__name__)
 

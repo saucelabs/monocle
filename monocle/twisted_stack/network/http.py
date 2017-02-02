@@ -5,14 +5,10 @@
 import os
 import logging
 
-from monocle import _o, Return, VERSION, launch, log_exception
-from monocle.callback import Callback
-from monocle.stack.network.http import HttpHeaders, HttpRequest, HttpRouter, write_request, read_response, extract_response
-from monocle.twisted_stack.eventloop import reactor
-from monocle.twisted_stack.network import Service, SSLService, Client, SSLClient
+from monocle import _o, Return, VERSION, log_exception
+from monocle.stack.network.http import HttpHeaders, HttpRequest, HttpRouter, extract_response
+from monocle.twisted_stack.network import Service, SSLService
 
-from twisted.internet import ssl
-from twisted.internet.protocol import ClientCreator
 from twisted.web import server, resource
 
 log = logging.getLogger("monocle.twisted_stack.network.http")
@@ -84,6 +80,10 @@ class _HttpServerResource(resource.Resource):
                     else:
                         grouped_headers[name] = [value]
                 for name, value in grouped_headers.iteritems():
+                    if isinstance(name, unicode):
+                        name = name.encode('ascii')
+                    if isinstance(value, unicode):
+                        value = value.encode('ascii')
                     twisted_request.responseHeaders.setRawHeaders(name, value)
                 twisted_request.write(content)
 

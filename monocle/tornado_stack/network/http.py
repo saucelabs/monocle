@@ -70,6 +70,10 @@ class HttpServer(Service, HttpRouter):
             headers.setdefault('Server', 'monocle/%s' % VERSION)
             headers.setdefault('Content-Length', str(len(content)))
             for name, value in headers.iteritems():
+                if isinstance(name, unicode):
+                    name = name.encode('ascii')
+                if isinstance(value, unicode):
+                    value = value.encode('ascii')
                 tornado_request.write("%s: %s\r\n" % (name, value))
             tornado_request.write("\r\n")
             tornado_request.write(content)

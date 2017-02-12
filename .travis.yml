@@ -15,8 +15,6 @@ matrix:
     # todo: fix asyncore, or deprecate
     #- env: id=py27-asyncore TOXENV=py27-asyncore
     #- env: id=py26-asyncore TOXENV=py26-asyncore
-  allow_failures:
-    - env: id=latest TOXENV=py27-twisted-latest
 
 cache:
   - apt

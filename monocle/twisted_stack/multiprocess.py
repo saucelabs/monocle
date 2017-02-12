@@ -1,6 +1,6 @@
 from multiprocessing import Pipe
 
-from monocle.stack.multiprocessimport launch_proc
+from monocle.stack.multiprocess import launch_proc
 
 log = logging.getLogger(__name__)
 

@@ -52,6 +52,7 @@ def repl(debug=True):
     def cont():
         done['val'] = True
 
+    ls = {}
     if debug:
         frame = inspect.currentframe()
         ls = frame.f_back.f_back.f_back.f_back.f_locals

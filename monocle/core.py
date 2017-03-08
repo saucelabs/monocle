@@ -80,51 +80,62 @@ def format_stack_lines(stack, elide_internals=tracebacks_elide_internals):
 
 def format_tb(e, elide_internals=tracebacks_elide_internals):
     s = ""
-    for i, (tb, stack) in enumerate(reversed(e._monocle['tracebacks'])):
+    for i, (tb, caller_stack) in enumerate(reversed(e._monocle['tracebacks'])):
         lines = tb.split('\n')
 
         first = lines[0]  # "Traceback (most recent call last)"
-        last = lines[-2]  # Line describing the exception
 
-        stack_lines = []
-        if not is_eventloop_stack(stack):
-            stack_lines = format_stack_lines(stack, elide_internals)
+        end_offset = -1
+        while (end_offset >= -len(lines) and
+               not lines[end_offset].startswith('  File ')):
+            end_offset -= 1
+        end_offset += 2
+        last = lines[end_offset]  # Line(s) describing the exception
+
+        caller_stack_lines = []
+        if caller_stack and not is_eventloop_stack(caller_stack):
+            caller_stack_lines = format_stack_lines(caller_stack, elide_internals)
 
         # 3 because of the "Traceback (most recent call last)" line,
         # plus two lines describing the g.throw that got us the
         # exception
-        lines = stack_lines + lines[3:-2]
+        lines = caller_stack_lines + lines[3:end_offset]
 
-        if is_eventloop_stack(stack):
-            if elide_internals:
+        if caller_stack and is_eventloop_stack(caller_stack):
+            if i + 1 < len(e._monocle['tracebacks']):
                 lines += ["  -- trampolined off eventloop --"]
-                if i + 1 == len(e._monocle['tracebacks']):
-                    # the last one is details on how we got called
-                    lines += format_stack_lines(stack[2:], elide_internals)
             else:
-                lines += format_stack_lines(stack, elide_internals)
+                lines += ["  -- trampolined off eventloop, into caller stack --"]
+                # the last one is details on how we got called
+                if elide_internals:
+                    caller_stack = caller_stack[2:]
+                lines += format_stack_lines(caller_stack, elide_internals)
 
         s += "\n" + '\n'.join(lines)
     return first + s + "\n" + last
 
 
-def _append_traceback(e, tb, stack):
+def _append_traceback(e, tb, caller_stack):
     if not hasattr(e, "_monocle"):
         e._monocle = {'tracebacks': []}
-    e._monocle['tracebacks'].append((tb, stack))
+    e._monocle['tracebacks'].append((tb, caller_stack))
     return e
 
 
-def _add_monocle_tb(e):
+def _add_monocle_tb(e, bounceback=False):
     tb = traceback.format_exc()
-    stack = traceback.extract_stack()
+    caller_stack = None
+    if bounceback:
+        caller_stack = traceback.extract_stack()
 
     # if it's not an eventloop stack, the first one we get is
     # comprehensive and future ones are higher up the stack.  if it is
     # an eventloop stack, we need to add it to reconstruct how we got
     # to the first one.
-    if is_eventloop_stack(stack) or not hasattr(e, "_monocle"):
-        _append_traceback(e, tb, stack)
+    if (not caller_stack or
+        is_eventloop_stack(caller_stack) or
+        not hasattr(e, "_monocle")):
+        _append_traceback(e, tb, caller_stack)
     return e
 
 
@@ -163,7 +174,7 @@ def _monocle_chain(to_gen, g, callback):
             # "return" statement (or fell off the end of the generator)
             from_gen = Return()
         except Exception, e:
-            callback(_add_monocle_tb(e))
+            callback(_add_monocle_tb(e, bounceback=(e == to_gen)))
             return callback
 
         if isinstance(from_gen, Return):

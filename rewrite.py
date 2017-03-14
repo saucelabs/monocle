@@ -16,6 +16,7 @@ from _pytest.assertion.rewrite import (
     AssertionRewritingHook,
 )
 
+
 class AssertionRewritingHook(AssertionRewritingHook):
 
     def find_module(self, name, path=None):
@@ -129,6 +130,7 @@ class AssertionRewritingHook(AssertionRewritingHook):
         finally:
             self.session = sess
         return self
+
 
 def make_assertion_hook():
     c = config.get_config()

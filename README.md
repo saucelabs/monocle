@@ -156,7 +156,7 @@ Alternatively you can you tox to run all the tests for the different backends:
     ...
     $ tox
 
-Check tox.ini to see you the tests are run.
+Check tox.ini to see how the tests are run.
 
 
 ## Who?

@@ -6,7 +6,6 @@ from monocle.twisted_stack.eventloop import reactor
 from twisted.internet.protocol import Factory, Protocol, ClientFactory
 from twisted.internet import ssl
 from twisted.internet.error import TimeoutError
-
 from monocle import _o, launch
 from monocle.callback import Callback
 from monocle.stack.network import Connection
@@ -184,6 +183,23 @@ class SSLContextFactory(ssl.ClientContextFactory):
         return ctx
 
 
+try:
+    from twisted.web.client import ProxyAgent
+    from twisted.internet.endpoints import TCP4ClientEndpoint
+
+    def setup_connection(client, proxy):
+        if proxy:
+            host, port = proxy
+            return ProxyAgent(TCP4ClientEndpoint(client, host, port))
+        else:
+            conn = _Connection()
+            conn.attach(client)
+            return conn
+except ImportError:
+    def setup_connection(client, proxy):
+        raise NotImplementedError(
+            "This version of Twisted doesn't support proxying")
+
 class Client(Connection):
     def __init__(self, *args, **kwargs):
         Connection.__init__(self, *args, **kwargs)
@@ -198,10 +214,13 @@ class Client(Connection):
         self._closed(msg)
 
     @_o
-    def connect(self, host, port):
+    def connect(self, host, port, proxy):
+        '''
+        proxy should look like this: ("localhost", 8080)
+        '''
         self._connection_timeout = self.timeout
-        self._stack_conn = _Connection()
-        self._stack_conn.attach(self)
+
+        self._stack_conn = setup_connection(self, proxy)
         self._stack_conn.connect_cb = Callback()
         factory = ClientFactory()
         factory.protocol = lambda: self._stack_conn

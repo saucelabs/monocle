@@ -5,19 +5,17 @@ from monocle import _o, Return
 from monocle.stack import network
 from monocle.stack.network import http
 
+@_o
+def default_handler(conn):
+    data = 'Hello, World!'
+    headers = http.HttpHeaders()
+    headers.add('Content-Length', len(data))
+    headers.add('Content-Type', 'text/plain')
+    headers.add('Connection', 'close')
+    yield Return(200, headers, data)
 
 @contextmanager
-def http_server_running(port, handler=None):
-    @_o
-    def _handler(conn):
-        data = 'Hello, World!'
-        headers = http.HttpHeaders()
-        headers.add('Content-Length', len(data))
-        headers.add('Content-Type', 'text/plain')
-        headers.add('Connection', 'close')
-        yield Return(200, headers, data)
-    if not handler:
-        handler = _handler
+def http_server_running(port, handler=default_handler):
     service = http.HttpServer(port, handler=handler)
     network.add_service(service)
     try:
@@ -69,3 +67,8 @@ def test_large_requests():
             send_body = 'x' * 1024 * 1024 * 10
             r = yield client.request('/', method='POST', body='x' * 1024 * 1024 * 10)
             assert recv_body[0] == send_body
+
+
+@test
+@_o
+def test_proxy():

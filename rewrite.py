@@ -4,9 +4,17 @@
 import os
 import sys
 import py
-from _pytest.assertion.rewrite import *
-from _pytest.assertion.rewrite import _read_pyc, _rewrite_test, _make_rewritten_pyc
-
+import imp
+import errno
+from _pytest import config
+from _pytest.assertion import install_importhook
+from _pytest.assertion.rewrite import (
+    PYC_TAIL,
+    _read_pyc,
+    _rewrite_test,
+    _make_rewritten_pyc,
+    AssertionRewritingHook,
+)
 
 class AssertionRewritingHook(AssertionRewritingHook):
 
@@ -121,3 +129,8 @@ class AssertionRewritingHook(AssertionRewritingHook):
         finally:
             self.session = sess
         return self
+
+def make_assertion_hook():
+    c = config.get_config()
+    c.parse([])
+    return install_importhook(c)

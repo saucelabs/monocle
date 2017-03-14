@@ -9,6 +9,7 @@ import inspect
 from cStringIO import StringIO
 from functools import partial, wraps
 
+import rewrite
 import monocle
 from monocle import _o, Return
 
@@ -154,8 +155,7 @@ def main(args):
     monocle.init(args.stack)
     from monocle.stack import eventloop
 
-    import rewrite
-    hook = rewrite.AssertionRewritingHook()
+    hook = rewrite.make_assertion_hook()
     sys.meta_path.insert(0, hook)
 
     class State(object):
@@ -217,10 +217,4 @@ def main(args):
 
 
 if __name__ == '__main__':
-    try:
-        main(sys.argv[1:])
-    except:
-        traceback.print_exc(file=sys.stdout)
-        raise
-    finally:
-        sys.exit(_fail_count)
+    main(sys.argv[1:])

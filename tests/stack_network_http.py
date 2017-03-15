@@ -67,8 +67,3 @@ def test_large_requests():
             send_body = 'x' * 1024 * 1024 * 10
             r = yield client.request('/', method='POST', body='x' * 1024 * 1024 * 10)
             assert recv_body[0] == send_body
-
-
-@test
-@_o
-def test_proxy():

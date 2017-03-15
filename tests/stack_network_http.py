@@ -5,6 +5,7 @@ from monocle import _o, Return
 from monocle.stack import network
 from monocle.stack.network import http
 
+
 @_o
 def default_handler(conn):
     data = 'Hello, World!'
@@ -13,6 +14,7 @@ def default_handler(conn):
     headers.add('Content-Type', 'text/plain')
     headers.add('Connection', 'close')
     yield Return(200, headers, data)
+
 
 @contextmanager
 def http_server_running(port, handler=default_handler):

@@ -18,12 +18,14 @@ from twisted.internet.endpoints import TCP4ClientEndpoint
 
 url = 'http://google.com'
 
+
 @_o
 def example():
     # Follow HTTP redirects
     agent = RedirectAgent(Agent(reactor))
     response = yield agent.request('GET', url)
     print '{} responded with code {}'.format(url, response.code)
+
 
 @_o
 def proxy_example():
@@ -32,7 +34,7 @@ def proxy_example():
     '''
     endpoint = TCP4ClientEndpoint(reactor, "localhost", 31337)
     agent = ProxyAgent(endpoint)
-    response = yield agent.request('GET', url) # 'http://saucelabs.secret/abc123')
+    response = yield agent.request('GET', url)
     print response.code, response.headers, response.length
 
 run(example)

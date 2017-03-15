@@ -6,6 +6,7 @@ from monocle.twisted_stack.eventloop import reactor
 from twisted.internet.protocol import Factory, Protocol, ClientFactory
 from twisted.internet import ssl
 from twisted.internet.error import TimeoutError
+
 from monocle import _o, launch
 from monocle.callback import Callback
 from monocle.stack.network import Connection
@@ -199,7 +200,6 @@ class Client(Connection):
     @_o
     def connect(self, host, port):
         self._connection_timeout = self.timeout
-
         self._stack_conn = _Connection()
         self._stack_conn.attach(self)
         self._stack_conn.connect_cb = Callback()

@@ -28,7 +28,7 @@ def example():
     # Follow HTTP redirects
     agent = RedirectAgent(Agent(reactor))
     response = yield agent.request('GET', url)
-    print '{} responded with code {}'.format(url, response.code)
+    print url, 'responded with code', response.code
 
 
 @_o

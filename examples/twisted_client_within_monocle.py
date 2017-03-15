@@ -9,12 +9,16 @@ from monocle.script_util import run
 from monocle import _o
 
 from twisted.internet import reactor
-from twisted.web.client import (
-    Agent,
-    ProxyAgent,
-    RedirectAgent,
-)
-from twisted.internet.endpoints import TCP4ClientEndpoint
+try:
+    from twisted.web.client import (
+        Agent,
+        ProxyAgent,
+        RedirectAgent,
+    )
+    from twisted.internet.endpoints import TCP4ClientEndpoint
+except ImportError:
+    print 'This test needs Twisted 11.1+'
+    raise SystemExit()
 
 url = 'http://google.com'
 

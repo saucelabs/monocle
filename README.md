@@ -137,7 +137,7 @@ an o-routine means "yield to other o-routines until we finish reading
 
 ## Developer information
 
-To run individuals tests on your computer install py.test and the packages for
+To run individual tests on your computer install py.test and the packages for
 the backend you’d like to test. Here’s how to do it in a separate virtualenv
 with Twisted:
 
@@ -150,7 +150,7 @@ You run the tests like this:
 
     $ .venv/bin/python o_test.py twisted tests/
 
-Alternatively you can you tox to run all the tests for the different backends:
+Alternatively you can use tox to run all the tests for the different backends:
 
     $ .venv/bin/pip install tox
     ...

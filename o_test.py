@@ -217,4 +217,10 @@ def main(args):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    try:
+        main(sys.argv[1:])
+    except:
+        traceback.print_exc(file=sys.stdout)
+        raise
+    finally:
+        sys.exit(_fail_count)

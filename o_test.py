@@ -9,6 +9,7 @@ import inspect
 from cStringIO import StringIO
 from functools import partial, wraps
 
+import rewrite
 import monocle
 from monocle import _o, Return
 
@@ -154,8 +155,7 @@ def main(args):
     monocle.init(args.stack)
     from monocle.stack import eventloop
 
-    import rewrite
-    hook = rewrite.AssertionRewritingHook()
+    hook = rewrite.make_assertion_hook()
     sys.meta_path.insert(0, hook)
 
     class State(object):

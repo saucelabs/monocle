@@ -135,6 +135,30 @@ helpful to think of `yield` as in *traffic*.  `yield conn.read(10)` in
 an o-routine means "yield to other o-routines until we finish reading
 10 bytes".
 
+## Developer information
+
+To run individual tests on your computer install py.test and the packages for
+the backend you’d like to test. Here’s how to do it in a separate virtualenv
+with Twisted:
+
+    $ cd monocle/
+    $ virtualenv --clear --no-site-package .venv
+    $ .venv/bin/pip install pytest twisted
+    ...
+
+You run the tests like this:
+
+    $ .venv/bin/python o_test.py twisted tests/
+
+Alternatively you can use tox to run all the tests for the different backends:
+
+    $ .venv/bin/pip install tox
+    ...
+    $ tox
+
+Check tox.ini to see how the tests are run.
+
+
 ## Who?
 
 Monocle was created by Greg Hazel and Steven Hazel.

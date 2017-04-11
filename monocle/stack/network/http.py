@@ -7,7 +7,7 @@ import logging
 import base64
 import Cookie
 
-from monocle import _o, Return, log_exception
+from monocle import _o, Return, log_exception, VERSION
 from monocle.stack.network import ConnectionLost, Client
 
 try:
@@ -16,6 +16,10 @@ except:
     pass
 
 log = logging.getLogger(__name__)
+
+
+class HttpException(Exception):
+    pass
 
 
 # a unique value to let us check when a default was not set to anything else

@@ -9,7 +9,8 @@ from threading import Thread
 
 import monocle
 from monocle import Return, _o
-from monocle.stack import eventloop
+if __name__ != '__main__':
+    from monocle.stack import eventloop
 
 from monocle.callback import Callback
 
@@ -120,6 +121,7 @@ def repl(debug=True):
                 g_ls = yield cb
                 if '__r' in g_ls:
                     r = g_ls.pop('__r')
+                    ls['_'] = r
                     if r:
                         print r
                 ls.update(g_ls)
@@ -131,5 +133,6 @@ def repl(debug=True):
 
 if __name__ == '__main__':
     monocle.init(sys.argv[1])
+    from monocle.stack import eventloop
     monocle.launch(repl, debug=False)
     eventloop.run()

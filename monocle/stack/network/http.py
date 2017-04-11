@@ -269,7 +269,8 @@ class HttpClient(object):
             self.client.timeout = value
 
     @_o
-    def connect(self, host, port, scheme='http', timeout=None):
+    def connect(self, host, port,
+                scheme='http', timeout=None, is_proxy=False):
         if timeout is not None:
             # this parameter is deprecated
             self.timeout = None
@@ -286,29 +287,31 @@ class HttpClient(object):
         self.scheme = scheme
         self.host = host
         self.port = port
+        self.is_proxy = is_proxy
         self.client.timeout = self._timeout
         yield self.client.connect(self.host, self.port)
 
     @_o
     def request(self, url, headers=None, method='GET', body=None):
         parts = urlparse.urlsplit(url)
-        scheme = parts.scheme or self.scheme
-        if scheme not in ['http', 'https']:
-            raise HttpException('unsupported url scheme %s' % parts.scheme)
 
-        host = parts.netloc
-        if not host:
-            host = self.host
-            if self.port != self.DEFAULT_PORTS[scheme]:
-                host += ":%s" % self.port
+        if self.is_proxy:
+            host = parts.netloc
+            path = url
+        else:
+            if parts.scheme and parts.scheme != self.scheme:
+                raise HttpException("URL is %s but connection is %s" %
+                                    (parts.scheme, self.scheme))
 
-        path = parts.path
-        if parts.query:
-            path += '?' + parts.query
+            host = parts.netloc
+            if not host:
+                host = self.host
+                if self.port != self.DEFAULT_PORTS[self.scheme]:
+                    host += ":%s" % self.port
 
-        if scheme != self.scheme:
-            raise HttpException("URL is %s but connection is %s" %
-                                (scheme, self.scheme))
+            path = parts.path
+            if parts.query:
+                path += '?' + parts.query
 
         if not headers:
             headers = HttpHeaders()

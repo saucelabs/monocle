@@ -7,7 +7,7 @@ except ImportError:
 
 from monocle import VERSION
 
-install_requires = []
+install_requires = ['mock']
 if sys.version_info < (2, 7):
     install_requires.append('ordereddict')
 

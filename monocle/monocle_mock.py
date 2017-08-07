@@ -25,20 +25,22 @@ class MonocleMock(_MonocleCallableMixin, Mock):
     monocle'd methods. For example:
 
     THE OLD WAY:
-    @twistedtest_o
-    def test_something_with_a_yield(self):
+    @test
+    @_o
+    def test_something_with_a_yield():
         my_mock = Mock()
         my_mock.chickens.return_value = "cluck"
         result = yield my_mock.chickens()        # <----- THIS FAILS!
-        self.assertEqual(result, "cluck")
+        assert "cluck" == result
 
     THE NEW WAY:
-    @twistedtest_o
-    def test_something_with_a_yield(self):
+    @test
+    @_o
+    def test_something_with_a_yield():
         my_mock = MonocleMock()                  # note difference in name
         my_mock.chickens.return_value = "cluck"
         result = yield my_mock.chickens()        # <----- THIS WORKS!
-        self.assertEqual(result, "cluck")
+        assert "cluck" == result
     '''
     pass
 

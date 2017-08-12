@@ -32,11 +32,16 @@ def test_assert_called_with():
 @test
 @_o
 def test_str():
-    mock = MonocleMock()
-    'MonocleMock' in mock.__str__()
+    def assert_str_and_repr_start_with(mock, expected):
+        assert isinstance(mock.__str__(), str)
+        assert isinstance(mock.__repr__(), str)
+        assert mock.__str__().startswith(expected)
+        assert mock.__repr__().startswith(expected)
 
-    mock = MagicMonocleMock()
-    'MagicMonocleMock' in mock.__str__()
+    assert_str_and_repr_start_with(MonocleMock(),
+                                   '<MonocleMock ')
+    assert_str_and_repr_start_with(MagicMonocleMock(),
+                                   '<MagicMonocleMock ')
 
 
 @test

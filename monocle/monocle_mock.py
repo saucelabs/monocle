@@ -15,7 +15,9 @@ class _MonocleCallableMixin(CallableMixin):
         # In this case the result is a string, and the content is something
         # like <MonocleMock id='4470907728'>. So we look for that particular
         # string and do NOT wrap it in a Monocle callback.
-        if isinstance(result, str) and "MonocleMock " in result:
+        if (isinstance(result, str) and 
+            (result.startswith('<MonocleMock ') or
+             result.startswith('<MagicMonocleMock '))):
             return result
 
         cb = Callback()

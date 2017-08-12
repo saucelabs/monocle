@@ -1,4 +1,7 @@
-from mock import CallableMixin, Mock, MagicMock
+try:
+    from mock import CallableMixin, Mock, MagicMock
+except ImportError:
+    raise ImportError('monocle_mock requires mock as an additional dependency')
 
 from monocle.callback import Callback
 

@@ -1,8 +1,6 @@
 from monocle import _o, Return
 from monocle.monocle_mock import MonocleMock, MagicMonocleMock
 
-from mock import Mock
-
 from o_test import test
 
 

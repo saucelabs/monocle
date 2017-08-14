@@ -7,6 +7,7 @@ monocle.init(sys.argv[1])
 from monocle.stack import eventloop
 from monocle.repl import repl
 
+
 @_o
 def main():
     x = 7

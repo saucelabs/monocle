@@ -60,6 +60,17 @@ def test_patch():
 
 
 @test
+@patch('monocle_mock.mock_me', new_callable=MagicMonocleMock)
+@_o
+def test_patch_decorator(mock):
+    # @patch must wrap/preceed @_o
+    mock.return_value = 'mocked result'
+    result = yield mock_me()
+    assert not isinstance(result, MagicMonocleMock)
+    assert result == 'mocked result'
+
+
+@test
 @_o
 def test_str():
     def assert_str_and_repr_start_with(mock, expected):

@@ -9,7 +9,7 @@ matrix:
     - python: 2.7
       env: id=latest TOXENV=py27-twisted-latest
     - python: 2.7
-      env: id=p27-recent TOXENV=py27-twisted-16,py27-twisted-15,py27-twisted-14
+      env: id=p27-recent TOXENV=py27-twisted-17,py27-twisted-16,py27-twisted-15,py27-twisted-14
     - python: 2.7
       env: id=p27-older TOXENV=py27-twisted-13,py27-twisted-12,py27-twisted-11,py27-twisted-10
     - python: 2.7

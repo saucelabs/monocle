@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 # This code is based heavily on inlineCallbacks from Twisted 10.0, see LICENSE.
 
 import sys
@@ -9,7 +10,7 @@ import inspect
 import os.path
 import functools
 
-from callback import Callback, defer
+from .callback import Callback, defer
 
 try:
     from twisted.python.failure import Failure as TwistedFailure
@@ -155,9 +156,9 @@ def _monocle_chain(to_gen, g, callback):
             start = time.time()
             try:
                 if isinstance(to_gen, Exception):
-                    from_gen = g.throw(type(to_gen), to_gen)
+                    from_gen = g.throw(type(to_gen)(to_gen))
                 elif isinstance(to_gen, TwistedFailure):
-                    from_gen = g.throw(to_gen.type, to_gen.value, to_gen.tb)
+                    from_gen = g.throw(to_gen.type(to_gen.value).with_traceback(to_gen.tb))
                 else:
                     from_gen = g.send(to_gen)
             finally:
@@ -173,14 +174,14 @@ def _monocle_chain(to_gen, g, callback):
         except StopIteration:
             # "return" statement (or fell off the end of the generator)
             from_gen = Return()
-        except Exception, e:
+        except Exception as e:
             callback(_add_monocle_tb(e, bounceback=(e == to_gen)))
             return callback
 
         if isinstance(from_gen, Return):
             try:
                 g.close()
-            except Exception, e:
+            except Exception as e:
                 callback(_add_monocle_tb(e))
             else:
                 callback(from_gen.value)
@@ -208,7 +209,7 @@ def _monocle_chain(to_gen, g, callback):
 def maybeCallbackGenerator(f, *args, **kw):
     try:
         result = f(*args, **kw)
-    except Exception, e:
+    except Exception as e:
         return defer(_add_monocle_tb(e))
 
     if isinstance(result, types.GeneratorType):

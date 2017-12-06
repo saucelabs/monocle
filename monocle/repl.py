@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 import code
 import readline
@@ -40,11 +41,11 @@ class HistoryConsole(code.InteractiveConsole):
 
 @_o
 def repl(debug=True):
-    print "Monocle", monocle.VERSION, "/", "Python", sys.version
-    print 'Type "help", "copyright", "credits" or "license" for more information.'
-    print "You can yield to Monocle oroutines at the prompt."
+    print("Monocle", monocle.VERSION, "/", "Python", sys.version)
+    print('Type "help", "copyright", "credits" or "license" for more information.')
+    print("You can yield to Monocle oroutines at the prompt.")
     if debug:
-        print "Use cont() to continue."
+        print("Use cont() to continue.")
     ic = HistoryConsole()
     gs = dict(globals())
 
@@ -89,7 +90,7 @@ def repl(debug=True):
                 if not _c:
                     continue
                 eval(_c, gs, ls)
-            except SyntaxError, e:
+            except SyntaxError as e:
                 if "'yield' outside function" not in str(e):
                     raise
 
@@ -123,7 +124,7 @@ def repl(debug=True):
                     r = g_ls.pop('__r')
                     ls['_'] = r
                     if r:
-                        print r
+                        print(r)
                 ls.update(g_ls)
         except Exception:
             traceback.print_exc()

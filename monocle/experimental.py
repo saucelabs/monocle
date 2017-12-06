@@ -2,8 +2,9 @@
 #
 # by Steven Hazel
 
+from __future__ import absolute_import
 from collections import deque
-from callback import Callback
+from .callback import Callback
 
 from monocle.stack.eventloop import queue_task
 from monocle import _o, Return

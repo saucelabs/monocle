@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 import monocle
 monocle.init(sys.argv[1])
@@ -12,10 +13,10 @@ from monocle.stack.network.http import HttpClient
 def example():
     client = HttpClient()
     yield client.connect("www.google.com", 443, "https")
-    print "connected"
+    print("connected")
     resp = yield client.request('/')
-    print "response code -> %s" % resp.code
-    print "page length -> %s" % len(repr(resp.body))
+    print("response code -> %s" % resp.code)
+    print("page length -> %s" % len(repr(resp.body)))
     client.close()
 
 run(example)

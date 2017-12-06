@@ -31,14 +31,14 @@ def sleep(seconds):
 def monkeypatch(cls):
     def decorator(f):
         orig_method = None
-        method = getattr(cls, f.func_name, None)
+        method = getattr(cls, f.__name__, None)
         if method:
             orig_method = lambda *a, **k: method(*a, **k)
 
         def g(*a, **k):
             return f(orig_method, *a, **k)
 
-        g.func_name = f.func_name
-        setattr(cls, f.func_name,
+        g.__name__ = f.__name__
+        setattr(cls, f.__name__,
                 new.instancemethod(g, None, cls))
     return decorator

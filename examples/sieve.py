@@ -1,3 +1,4 @@
+from __future__ import print_function
 # Copyright (c) 2010 Sauce Labs Inc
 # Copyright (c) 2009 The Go Authors. All rights reserved.
 #
@@ -91,7 +92,7 @@ def main():
     monocle.launch(generate, ch)  # Start generate() as an o-routine.
     while True:
         prime = yield ch.recv()
-        print prime
+        print(prime)
         ch1 = Channel()
         filter(ch, ch1, prime)
         ch = ch1

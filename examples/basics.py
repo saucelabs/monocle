@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 import monocle
 monocle.init(sys.argv[1])
@@ -11,13 +12,13 @@ from monocle import Return, InvalidYieldException
 @_o
 def square(x):
     yield Return(x * x)
-    print "not reached"
+    print("not reached")
 
 
 @_o
 def fail():
     raise Exception("boo")
-    print (yield square(2))
+    print((yield square(2)))
 
 
 @_o
@@ -28,16 +29,16 @@ def invalid_yield():
 @_o
 def main():
     value = yield square(5)
-    print value
+    print(value)
     try:
         yield fail()
-    except Exception, e:
-        print "Caught exception:", type(e), str(e)
+    except Exception as e:
+        print("Caught exception:", type(e), str(e))
 
     try:
         yield invalid_yield()
-    except InvalidYieldException, e:
-        print "Caught exception:", type(e), str(e)
+    except InvalidYieldException as e:
+        print("Caught exception:", type(e), str(e))
     else:
         assert False
 

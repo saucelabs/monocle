@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 
 import monocle
@@ -11,9 +12,9 @@ from monocle.repl import repl
 @_o
 def main():
     x = 7
-    print "about to drop into repl, x =", x
+    print("about to drop into repl, x =", x)
     yield repl()
-    print "returned from repl, x =", x
+    print("returned from repl, x =", x)
 
 monocle.launch(main)
 eventloop.run()

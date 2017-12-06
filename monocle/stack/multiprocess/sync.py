@@ -1,3 +1,4 @@
+from __future__ import print_function
 # eventually this will be part of monocle
 
 import select
@@ -47,7 +48,7 @@ class SyncSockChannel(object):
         while data:
             try:
                 r = self.sock.send(data)
-            except socket.error, e:
+            except socket.error as e:
                 if e.args[0] == EINTR:
                     continue
                 raise
@@ -58,7 +59,7 @@ class SyncSockChannel(object):
         while count:
             try:
                 data = self.sock.recv(min(count, 4096))
-            except socket.error, e:
+            except socket.error as e:
                 if e.args[0] == EINTR:
                     continue
                 raise
@@ -155,8 +156,8 @@ def _wrapper_with_sockets(target, port, *args, **kwargs):
     while True:
         try:
             sock.connect(('127.0.0.1', port))
-        except Exception, e:
-            print "failed to connect to monocle multiprocess parent on port", port, type(e), str(e)
+        except Exception as e:
+            print("failed to connect to monocle multiprocess parent on port", port, type(e), str(e))
             time.sleep(0.2)
             sock.close()
             sock = socket.socket()

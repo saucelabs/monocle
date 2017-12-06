@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 
 import monocle
@@ -12,11 +13,11 @@ from monocle.util import sleep
 @_o
 def yielding_oroutine(x, z=1):
     yield sleep(1)
-    print x
+    print(x)
 
 
 def nonyielding_oroutine(x, z=1):
-    print x
+    print(x)
 
 
 @_o

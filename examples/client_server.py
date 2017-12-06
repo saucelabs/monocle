@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 import time
 import monocle
@@ -30,7 +31,7 @@ def do_echos():
             yield client.write(msg + '\r\n')
             echo_result = yield client.read_until("\r\n")
             assert echo_result.strip() == "you said: %s" % msg
-        print '10000 loops in %.2fs' % (time.time() - t)
+        print('10000 loops in %.2fs' % (time.time() - t))
     finally:
         client.close()
 

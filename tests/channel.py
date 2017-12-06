@@ -1,3 +1,4 @@
+from __future__ import print_function
 from collections import deque
 
 import monocle
@@ -19,19 +20,19 @@ def test_send_recv():
 
 @_o
 def sendxs(ch, xs):
-    print "in sendxs"
+    print("in sendxs")
     for x in xs:
         yield ch.send(x)
-    print "leaving sendxs"
+    print("leaving sendxs")
 
 
 @_o
 def recvxs(ch, xs):
-    print "in recvxs"
+    print("in recvxs")
     for x in xs:
         y = yield ch.recv()
         assert y == x, "%s != %s" % (y, x)
-    print "leaving recvxs"
+    print("leaving recvxs")
 
 
 @test
@@ -46,21 +47,21 @@ def test_buffers_oneway():
 
 @_o
 def chat1(ch1, ch2, xs):
-    print "in chat1"
+    print("in chat1")
     for x in xs:
         yield ch1.send(x)
         yield ch2.recv()
-    print "leaving chat1"
+    print("leaving chat1")
 
 
 @_o
 def chat2(ch1, ch2, xs):
-    print "in chat2"
+    print("in chat2")
     for x in xs:
         y = yield ch1.recv()
         assert y == x, "%s != %s" % (y, x)
         yield ch2.send(x)
-    print "leaving chat2"
+    print("leaving chat2")
 
 
 @test
@@ -77,10 +78,10 @@ def test_buffers_twoway():
 @_o
 def try_pattern(pattern):
     # s = start send, r = start recv, R = wait for a recv, S = wait for a send
-    print "in try_pattern"
+    print("in try_pattern")
     assert (pattern.count("s") == pattern.count("S") ==
             pattern.count("r") == pattern.count("R"))
-    print "assert passed"
+    print("assert passed")
     cs = 0
     cr = 0
     scbs = deque()
@@ -89,26 +90,26 @@ def try_pattern(pattern):
 
     for c in pattern:
         if c == "s":
-            print "starting send"
+            print("starting send")
             scbs.append(ch.send(cs))
             cs += 1
-            print "started send"
+            print("started send")
         elif c == "S":
-            print "waiting for send"
+            print("waiting for send")
             yield scbs.popleft()
-            print "done waiting for send"
+            print("done waiting for send")
         elif c == "r":
-            print "starting recv"
+            print("starting recv")
             rcbs.append(ch.recv())
-            print "started recv"
+            print("started recv")
         elif c == "R":
-            print "waiting for recv"
+            print("waiting for recv")
             x = yield rcbs.popleft()
-            print "done waiting for recv"
+            print("done waiting for recv")
             assert x == cr, "%s != %s" % (x, cr)
-            print "post-recv assert passed"
+            print("post-recv assert passed")
             cr += 1
-    print "leaving try_pattern"
+    print("leaving try_pattern")
 
 
 @test

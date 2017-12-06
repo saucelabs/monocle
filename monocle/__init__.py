@@ -1,6 +1,7 @@
+from __future__ import absolute_import
 import sys
-import core
-from core import _o, o, launch, Return, InvalidYieldException, log_exception
+from . import core
+from .core import _o, o, launch, Return, InvalidYieldException, log_exception
 
 VERSION = '0.40'
 

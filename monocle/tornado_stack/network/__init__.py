@@ -172,7 +172,7 @@ class Service(object):
         while True:
             try:
                 s, address = self._sock.accept()
-            except socket.error, e:
+            except socket.error as e:
                 if e[0] not in (errno.EWOULDBLOCK, errno.EAGAIN):
                     raise
                 return
@@ -214,13 +214,13 @@ class SSLService(Service):
                                 server_side=True,
                                 do_handshake_on_connect=False,
                                 **self.ssl_options)
-        except ssl.SSLError, err:
+        except ssl.SSLError as err:
             if err.args[0] == ssl.SSL_ERROR_EOF:
                 s.close()
                 return
             else:
                 raise
-        except socket.error, err:
+        except socket.error as err:
             if err.args[0] == errno.ECONNABORTED:
                 s.close()
                 return

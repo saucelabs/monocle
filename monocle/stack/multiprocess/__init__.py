@@ -2,6 +2,7 @@
 #
 # by Steven Hazel
 
+from __future__ import print_function
 import sys
 import os
 import logging
@@ -113,8 +114,8 @@ def _subproc_wrapper(port, target, *args, **kwargs):
             try:
                 yield client.connect('127.0.0.1', port)
                 break
-            except Exception, e:
-                print "failed to connect to monocle multiprocess parent on port", port, type(e), str(e)
+            except Exception as e:
+                print("failed to connect to monocle multiprocess parent on port", port, type(e), str(e))
                 yield sleep(1)
         chan = SocketChannel(client)
         yield target(chan, *args, **kwargs)

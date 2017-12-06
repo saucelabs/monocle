@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 
 import monocle
@@ -14,13 +15,13 @@ def main():
     s = 2
     ch = Channel(s)
     for i in xrange(s):
-        print i
+        print(i)
         yield ch.send(i)
 
-    print ch.bufsize, len(ch._msgs)
+    print(ch.bufsize, len(ch._msgs))
     for i in xrange(s):
-        print (yield ch.recv())
-    print "done"
+        print((yield ch.recv()))
+    print("done")
 
 
 monocle.launch(main)

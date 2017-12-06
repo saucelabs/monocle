@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import sys
 import time
@@ -51,23 +52,23 @@ def run_test(test, verbose=False):
             root.removeHandler(handler)
             for h in handlers:
                 root.addHandler(h)
-    except Exception, e:
+    except Exception as e:
         if isinstance(e, AssertionError):
             if verbose:
-                print "FAIL"
+                print("FAIL")
             else:
                 sys.stdout.write("F")
             result['type'] = "FAIL"
         else:
             if verbose:
-                print "ERROR"
+                print("ERROR")
             else:
                 sys.stdout.write("E")
             result['type'] = "ERROR"
         result['tb'] = traceback.format_exc()
     else:
         if verbose:
-            print "ok"
+            print("ok")
         else:
             sys.stdout.write(".")
         result['type'] = "SUCCESS"
@@ -109,35 +110,35 @@ def run(tests, verbose=False):
             result = yield test(verbose)
             results.append(result)
         duration = time.time() - start_time
-        print
-        print "----------------------------------------------------------------------"
-        print "Ran %s tests in %.3fs" % (len(tests), duration)
-        print
+        print()
+        print("----------------------------------------------------------------------")
+        print("Ran %s tests in %.3fs" % (len(tests), duration))
+        print()
         _fail_count = 0
         for result in results:
             if result['type'] != "SUCCESS":
                 _fail_count += 1
                 test = result['test']
-                print "======================================================================"
-                print "%s %s (%s)" % (result['type'],
+                print("======================================================================")
+                print("%s %s (%s)" % (result['type'],
                                       test.__doc__ or test.__name__,
-                                      __file__)
-                print "----------------------------------------------------------------------"
-                print result['tb']
+                                      __file__))
+                print("----------------------------------------------------------------------")
+                print(result['tb'])
                 if result['stdout']:
-                    print "-------------------- >> begin captured stdout << ---------------------"
-                    print result['stdout']
-                    print "--------------------- >> end captured stdout << ----------------------"
+                    print("-------------------- >> begin captured stdout << ---------------------")
+                    print(result['stdout'])
+                    print("--------------------- >> end captured stdout << ----------------------")
                 if result['stderr']:
-                    print "-------------------- >> begin captured stderr << ---------------------"
-                    print result['stderr']
-                    print "--------------------- >> end captured stderr << ----------------------"
+                    print("-------------------- >> begin captured stderr << ---------------------")
+                    print(result['stderr'])
+                    print("--------------------- >> end captured stderr << ----------------------")
                 if result['log']:
-                    print "-------------------- >> begin captured log << ---------------------"
-                    print result['log']
-                    print "--------------------- >> end captured log << ----------------------"
+                    print("-------------------- >> begin captured log << ---------------------")
+                    print(result['log'])
+                    print("--------------------- >> end captured log << ----------------------")
         if not _fail_count:
-            print "OK"
+            print("OK")
     finally:
         from monocle.stack import eventloop
         eventloop.halt()
@@ -163,7 +164,7 @@ def main(args):
 
         def trace(self, msg):
             if self.debug:
-                print msg
+                print(msg)
 
     class Config(object):
         _assertstate = State()
@@ -194,7 +195,7 @@ def main(args):
                         all_tests.append(file[:-3])
                         test_files.append(os.path.join(top, file))
         else:
-            print "Unknown file or directory", path
+            print("Unknown file or directory", path)
             return
 
         sys.path.extend(paths)
@@ -205,9 +206,9 @@ def main(args):
             try:
                 m = __import__(test, globals(), locals())
                 if hasattr(m, "test"):
-                    imported_tests.extend(m.test.func_globals['_tests'])
-            except Exception, e:
-                print test, str(e)
+                    imported_tests.extend(m.test.__globals__['_tests'])
+            except Exception as e:
+                print(test, str(e))
         _tests.extend(set(imported_tests))
 
     random.shuffle(_tests)

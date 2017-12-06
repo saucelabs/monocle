@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 import monocle
 
@@ -26,7 +27,7 @@ def main():
     yield c.connect('google.com', 80)
     c.timeout = 0
     x = yield c.read(40000)
-    print x
+    print(x)
 
 
 monocle.launch(main)

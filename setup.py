@@ -8,8 +8,6 @@ except ImportError:
 from monocle import VERSION
 
 install_requires = []
-if sys.version_info < (2, 7):
-    install_requires.append('ordereddict')
 
 setup(name="monocle",
       version=VERSION,

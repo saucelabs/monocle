@@ -59,7 +59,7 @@ class HttpServer(Service, HttpRouter):
 
                 value = yield launch(self.handle_request, request)
                 code, headers, content = extract_response(value)
-            except:
+            except Exception:
                 code, headers, content = 500, {}, "500 Internal Server Error"
             tornado_request.write("HTTP/1.1 %s %s\r\n" %
                                   (code, responses.get(code, 'Unknown')))

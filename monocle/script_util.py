@@ -12,7 +12,7 @@ def run(fn):
     def _run_async(ctx):
         try:
             yield fn()
-        except:
+        except Exception:
             traceback.print_exc(file=sys.stdout)
             ctx['exit_code'] = 1
         finally:

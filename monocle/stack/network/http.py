@@ -12,7 +12,7 @@ from monocle.stack.network import ConnectionLost, Client
 
 try:
     from monocle.stack.network import SSLClient
-except:
+except Exception:
     pass
 
 log = logging.getLogger(__name__)

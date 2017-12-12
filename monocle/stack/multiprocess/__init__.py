@@ -36,9 +36,9 @@ class SocketChannel(object):
 
     @_o
     def recv(self):
-        l = yield self.conn.readline()
-        l = int(l)
-        p = yield self.conn.read(l)
+        line = yield self.conn.readline()
+        line = int(line)
+        p = yield self.conn.read(line)
         value = pickle.loads(p)
         yield Return(value)
 

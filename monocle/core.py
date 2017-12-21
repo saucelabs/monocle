@@ -22,8 +22,6 @@ except ImportError:
     class TwistedDeferred:
         pass
 
-logging.basicConfig(stream=sys.stderr,
-                    format="%(message)s")
 log = logging.getLogger("monocle")
 
 blocking_warn_threshold = 500  # ms

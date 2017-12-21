@@ -9,15 +9,15 @@ if 'twisted.internet.reactor' not in sys.modules:
     try:
         from twisted.internet import epollreactor
         epollreactor.install()
-    except:
+    except Exception:
         try:
             from twisted.internet import kqreactor
             kqreactor.install()
-        except:
+        except Exception:
             try:
                 from twisted.internet import pollreactor
                 pollreactor.install()
-            except:
+            except Exception:
                 pass
 
 from twisted.internet import reactor

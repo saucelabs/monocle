@@ -75,14 +75,14 @@ class SyncSockChannel(object):
         self._sendall(p)
 
     def recv(self):
-        l = ""
+        line = ""
         while True:
             x = self._recv(1)
             if x == "\n":
                 break
-            l += x
-        l = int(l)
-        p = self._recv(l)
+            line += x
+        line = int(line)
+        p = self._recv(line)
         try:
             value = pickle.loads(p)
         except Exception:
@@ -124,9 +124,7 @@ class SockChannelHandler(logging.Handler):
     def emit(self, record):
         try:
             self.send(record)
-        except (KeyboardInterrupt, SystemExit):
-            raise
-        except:
+        except Exception:
             self.handleError(record)
 
     def close(self):
@@ -223,9 +221,7 @@ class PipeHandler(logging.Handler):
     def emit(self, record):
         try:
             self.send(record)
-        except (KeyboardInterrupt, SystemExit):
-            raise
-        except:
+        except Exception:
             self.handleError(record)
 
     def close(self):

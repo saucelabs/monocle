@@ -1,5 +1,6 @@
 import sys
 import thread
+import signal
 
 from monocle import launch
 
@@ -50,10 +51,38 @@ class EventLoop(object):
         singleton(self, "Twisted can only have one EventLoop (reactor)")
         self._halted = False
         self._thread_ident = thread.get_ident()
+        self._sig_handlers = {}
+
+        # queue this up as early as possible, so that signal handlers get
+        # reinstalled just after the reactor starts up
+        self.queue_task(0, self._reinstall_signal_handlers)
+
+    def _preserve_sig_handlers(self):
+        """ Obnoxiously, twisted overwrites any event handlers with its own when
+        its reactor starts up. Nobody wants that. To make twisted work more like
+        other stacks, we preserve any non-default signal handlers so that they
+        can be reinstalled after the reactor has started. """
+        default_handlers = {None, signal.SIG_DFL, signal.SIG_IGN,
+                            signal.default_int_handler}
+        i = 1
+        while True:
+            try:
+                handler = signal.getsignal(i)
+                if handler not in default_handlers:
+                    self._sig_handlers[i] = handler
+            except ValueError:
+                break
+            i += 1
+
+    def _reinstall_signal_handlers(self):
+        """ Reinstall preserved signal handlers """
+        for sig, handler in self._sig_handlers.iteritems():
+            signal.signal(sig, handler)
 
     def queue_task(self, delay, callable, *args, **kw):
         if thread.get_ident() != self._thread_ident:
-            reactor.callFromThread(reactor.callLater, delay, launch, callable, *args, **kw)
+            reactor.callFromThread(reactor.callLater,
+                                   delay, launch, callable, *args, **kw)
         else:
             df = reactor.callLater(delay, launch, callable, *args, **kw)
             return Task(df)
@@ -61,6 +90,11 @@ class EventLoop(object):
     def run(self):
         if not self._halted:
             self._thread_ident = thread.get_ident()
+
+            # preserve signal handlers just before reactor startup; a task has
+            # already been queued up to reinstall them as quickly as possible
+            self._preserve_sig_handlers()
+
             reactor.run()
 
     def halt(self):

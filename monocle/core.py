@@ -154,9 +154,9 @@ def _monocle_chain(to_gen, g, callback):
             start = time.time()
             try:
                 if isinstance(to_gen, Exception):
-                    from_gen = g.throw(type(to_gen)(to_gen))
+                    from_gen = g.throw(type(to_gen), to_gen)
                 elif isinstance(to_gen, TwistedFailure):
-                    from_gen = g.throw(to_gen.type(to_gen.value).with_traceback(to_gen.tb))
+                    from_gen = g.throw(to_gen.type, to_gen.value, to_gen.tb)
                 else:
                     from_gen = g.send(to_gen)
             finally:

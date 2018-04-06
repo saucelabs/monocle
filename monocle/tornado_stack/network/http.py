@@ -74,7 +74,5 @@ class HttpServer(Service, HttpRouter):
             tornado_request.write("\r\n")
             tornado_request.write(content)
             tornado_request.finish()
-        self._http_server = tornado.httpserver.HTTPServer(
-            _handler,
-            io_loop=el._tornado_ioloop)
+        self._http_server = tornado.httpserver.HTTPServer(_handler)
         self._http_server.listen(self.port)

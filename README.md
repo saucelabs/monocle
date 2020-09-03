@@ -4,7 +4,10 @@
 [![pypi](https://img.shields.io/pypi/v/monocle.svg)](https://pypi.python.org/pypi/monocle/)
 [![Build Status](https://travis-ci.org/saucelabs/monocle.png?branch=master)](https://travis-ci.org/saucelabs/monocle)
 
-monocle straightens out event-driven code using Python's generators.
+> ‼️ Monocle only supports Python v2 which has reached end of life (EOL)
+  on January 1st, 2020. We don't recommend to use this package anymore. ‼️
+
+Monocle straightens out event-driven code using Python's generators.
 It aims to be portable between event-driven I/O frameworks, and
 currently supports Twisted and Tornado.
 
